@@ -1,7 +1,8 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Spring Security Example</title>
+    <meta charset="UTF-8">
+    <title>Admin Page</title>
     <style>
         /* Стиль для кнопки logout */
         .logout-button {
@@ -24,8 +25,10 @@
         }
     </style>
 </head>
+
+
 <body>
-<h1>My Profile</h1>
+<h1>Users List</h1>
 <table border="1">
     <thead>
     <tr>
@@ -35,10 +38,20 @@
     </tr>
     </thead>
     <tbody>
-    <tr>
+    <tr th:each="user : ${users}">
         <td th:text="${user.id}"></td>
         <td th:text="${user.username}"></td>
         <td th:text="${user.yearOfBirth}"></td>
+        <td>
+            <form action="/admin/delete" method="post" style="display:inline;">
+                <input type="hidden" name="_csrf" th:value="${_csrf.token}" />
+                <input type="hidden" name="id" th:value="${user.id}">
+                <button type="submit">Delete</button>
+            </form>
+        </td>
+        <td>
+            <a th:href="@{/admin/edit(id=${user.id})}">Edit</a>
+        </td>
     </tr>
     </tbody>
 </table>
