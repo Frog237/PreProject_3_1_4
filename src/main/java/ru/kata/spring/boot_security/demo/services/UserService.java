@@ -7,9 +7,11 @@ import java.util.List;
 
 public interface UserService {
 
+    void add(User user);
+
     User findById(Integer id);
 
-    User findByUsername(String username);
+    User findByEmail(String email);
 
     List<User> findAll();
 

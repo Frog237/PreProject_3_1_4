@@ -20,14 +20,20 @@ public class UserServiceImp implements UserService {
 
     @Override
     @Transactional
+    public void add(User user) {
+        userDao.add(user);
+    }
+
+    @Override
+    @Transactional
     public User findById(Integer id) {
         return userDao.findById(id);
     }
 
     @Override
     @Transactional
-    public User findByUsername(String username) {
-        return userDao.findByUsername(username);
+    public User findByEmail(String email) {
+        return userDao.findByEmail(email);
     }
 
     @Override

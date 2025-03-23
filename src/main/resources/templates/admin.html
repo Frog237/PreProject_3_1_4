@@ -28,6 +28,36 @@
 
 
 <body>
+<h1>Add New User</h1>
+<form action="/admin/add" method="post">
+    <input type="hidden" name="_csrf" th:value="${_csrf.token}" />
+
+    <label for="firstName">First Name:</label>
+    <input type="text" id="firstName" name="firstName" required>
+
+    <label for="lastName">Last Name:</label>
+    <input type="text" id="lastName" name="lastName" required>
+
+    <label for="age">Age:</label>
+    <input type="number" id="age" name="age" required>
+
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email" required>
+
+    <label for="password">Password:</label>
+    <input type="password" id="password" name="password" required>
+
+    <label for="roles">Roles:</label>
+    <select id="roles" name="roleIds" multiple>
+        <option th:each="role : ${allRoles}"
+                th:value="${role.id}"
+                th:text="${role.name}">
+        </option>
+    </select>
+
+    <button type="submit">Add User</button>
+</form>
+
 <h1>Users List</h1>
 <table border="1">
     <thead>
@@ -40,8 +70,11 @@
     <tbody>
     <tr th:each="user : ${users}">
         <td th:text="${user.id}"></td>
-        <td th:text="${user.username}"></td>
-        <td th:text="${user.yearOfBirth}"></td>
+        <td th:text="${user.firstName}"></td>
+        <td th:text="${user.lastName}"></td>
+        <td th:text="${user.age}"></td>
+        <td th:text="${user.email}"></td>
+        <td th:text="${user.roles}"></td>
         <td>
             <form action="/admin/delete" method="post" style="display:inline;">
                 <input type="hidden" name="_csrf" th:value="${_csrf.token}" />

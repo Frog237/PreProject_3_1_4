@@ -30,15 +30,21 @@
     <thead>
     <tr>
         <th>id</th>
-        <th>Username</th>
-        <th>Year of birth</th>
+        <th>First Name</th>
+        <th>Last Name</th>
+        <th>Age</th>
+        <th>Email</th>
+        <th>Roles</th>
     </tr>
     </thead>
     <tbody>
     <tr>
         <td th:text="${user.id}"></td>
-        <td th:text="${user.username}"></td>
-        <td th:text="${user.yearOfBirth}"></td>
+        <td th:text="${user.firstName}"></td>
+        <td th:text="${user.lastName}"></td>
+        <td th:text="${user.age}"></td>
+        <td th:text="${user.email}"></td>
+        <td th:text="${user.roles}"></td>
     </tr>
     </tbody>
 </table>

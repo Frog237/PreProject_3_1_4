@@ -2,6 +2,7 @@ package ru.kata.spring.boot_security.demo.dao;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 import ru.kata.spring.boot_security.demo.models.Role;
 import ru.kata.spring.boot_security.demo.models.User;
@@ -17,8 +18,17 @@ public class UserDaoImp implements UserDao {
     @Autowired
     private RoleRepository roleRepository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @PersistenceContext
     private EntityManager entityManager;
+
+    @Override
+    public void add(User user) {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        entityManager.persist(user);
+    }
 
     @Override
     public User findById(Integer id) {
@@ -26,9 +36,9 @@ public class UserDaoImp implements UserDao {
     }
 
     @Override
-    public User findByUsername(String username) {
-        return entityManager.createQuery("SELECT u FROM User u WHERE u.username = :username", User.class)
-                .setParameter("username", username)
+    public User findByEmail(String email) {
+        return entityManager.createQuery("SELECT u FROM User u WHERE u.email = :email", User.class)
+                .setParameter("email", email)
                 .getSingleResult();
     }
 
@@ -39,6 +49,7 @@ public class UserDaoImp implements UserDao {
 
     @Override
     public void update(User user) {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         entityManager.merge(user);
     }
 

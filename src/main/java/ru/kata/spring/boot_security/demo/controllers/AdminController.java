@@ -31,7 +31,28 @@ public class AdminController {
 	public String usersList(ModelMap model) {
 		List<User> users = userService.findAll();
 		model.addAttribute("users", users);
+
+		List<Role> allRoles = userService.getAllRoles();
+		model.addAttribute("allRoles", allRoles);
 		return "admin";
+	}
+
+	@PostMapping(value = "/admin/add")
+	@PreAuthorize("hasRole('ADMIN')")
+	public String addUser(
+			@RequestParam("firstName") String firstName,
+			@RequestParam("lastName") String lastName,
+			@RequestParam("age") byte age,
+			@RequestParam("email") String email,
+			@RequestParam("password") String password,
+			@RequestParam("roleIds") List<Long> roleIds) {
+		User addedUser = new User(firstName, lastName, age, email, password);
+		Set<Role> roles = roleIds.stream()
+				.map(roleId -> userService.findRoleById(roleId))
+				.collect(Collectors.toSet());
+		addedUser.setRoles(roles);
+		userService.add(addedUser);
+		return "redirect:/admin";
 	}
 
 	@PostMapping(value = "/admin/delete")
@@ -57,16 +78,20 @@ public class AdminController {
 	@PostMapping(value = "/admin/update")
 	@PreAuthorize("hasRole('ADMIN')")
 	public String updateUser(
-			@RequestParam("id") int id,
-			@RequestParam("username") String username,
+			@RequestParam("id") Integer id,
+			@RequestParam("firstName") String firstName,
+			@RequestParam("lastName") String lastName,
+			@RequestParam("age") byte age,
+			@RequestParam("email") String email,
 			@RequestParam("password") String password,
-			@RequestParam("year_of_birth") int yearOfBirth,
 			@RequestParam("roleIds") List<Long> roleIds) {
-		User updatedUser = new User();
-		updatedUser.setId(id);
-		updatedUser.setUsername(username);
+
+		User updatedUser = userService.findById(id);
+		updatedUser.setFirstName(firstName);
+		updatedUser.setLastName(lastName);
+		updatedUser.setAge(age);
+		updatedUser.setEmail(email);
 		updatedUser.setPassword(password);
-		updatedUser.setYearOfBirth(yearOfBirth);
 		Set<Role> roles = roleIds.stream()
 				.map(roleId -> userService.findRoleById(roleId))
 				.collect(Collectors.toSet());

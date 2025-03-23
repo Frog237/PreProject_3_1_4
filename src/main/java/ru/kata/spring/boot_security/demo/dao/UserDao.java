@@ -9,9 +9,11 @@ import java.util.List;
 
 public interface UserDao {
 
+    void add(User user);
+
     User findById(Integer id);
 
-    User findByUsername(String username);
+    User findByEmail(String username);
 
     List<User> findAll();
 
