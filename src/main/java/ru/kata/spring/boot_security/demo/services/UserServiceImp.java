@@ -7,56 +7,68 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.kata.spring.boot_security.demo.models.Role;
 import ru.kata.spring.boot_security.demo.models.User;
+import ru.kata.spring.boot_security.demo.repositories.PeopleRepository;
 import ru.kata.spring.boot_security.demo.repositories.RoleRepository;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImp implements UserService {
 
-    @Autowired
     private RoleRepository roleRepository;
+    private PasswordEncoder passwordEncoder;
+    private PeopleRepository peopleRepository;
 
     @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @PersistenceContext
-    private EntityManager entityManager;
+    UserServiceImp(RoleRepository roleRepository
+            , PasswordEncoder passwordEncoder
+            , PeopleRepository peopleRepository) {
+        this.roleRepository = roleRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.peopleRepository = peopleRepository;
+    }
 
     @Override
     @Transactional
     public void add(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        entityManager.persist(user);
+        peopleRepository.save(user);
     }
 
     @Override
     @Transactional
     public User findById(Integer id) {
-        return entityManager.find(User.class, id);
+        return peopleRepository.findById(id).get();
     }
 
     @Override
     @Transactional
     public User findByEmail(String email) {
-        return entityManager.createQuery("SELECT u FROM User u WHERE u.email = :email", User.class)
-                .setParameter("email", email)
-                .getSingleResult();
+        return peopleRepository.findByEmail(email).get();
+    }
+
+    @Override
+    @Transactional
+    public Set<Role> findRolesByIds(List<Long> roleIds) {
+        Set<Role> roles = roleIds.stream()
+                .map(roleId -> findRoleById(roleId))
+                .collect(Collectors.toSet());
+        return roles;
     }
 
     @Override
     @Transactional
     public List<User> findAll() {
-        return entityManager.createQuery("SELECT u FROM User u", User.class).getResultList();
+        return peopleRepository.findAll();
     }
 
     @Override
     @Transactional
     public void update(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        entityManager.merge(user);
+        peopleRepository.save(user);
     }
 
     @Override
@@ -64,7 +76,7 @@ public class UserServiceImp implements UserService {
     public void delete(Integer id) {
         User user = findById(id);
         if (user != null) {
-            entityManager.remove(user);
+            peopleRepository.delete(user);
         }
     }
 

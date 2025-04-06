@@ -2,7 +2,6 @@ package ru.kata.spring.boot_security.demo.controllers;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -14,8 +13,6 @@ import ru.kata.spring.boot_security.demo.models.User;
 import ru.kata.spring.boot_security.demo.services.UserService;
 
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Controller
 public class AdminController {
@@ -51,10 +48,7 @@ public class AdminController {
 			@RequestParam("password") String password,
 			@RequestParam("roleIds") List<Long> roleIds) {
 		User addedUser = new User(firstName, lastName, age, email, password);
-		Set<Role> roles = roleIds.stream()
-				.map(roleId -> userService.findRoleById(roleId))
-				.collect(Collectors.toSet());
-		addedUser.setRoles(roles);
+		addedUser.setRoles(userService.findRolesByIds(roleIds));
 		userService.add(addedUser);
 		return "redirect:/admin";
 	}
@@ -82,10 +76,7 @@ public class AdminController {
 		updatedUser.setAge(age);
 		updatedUser.setEmail(email);
 		updatedUser.setPassword(password);
-		Set<Role> roles = roleIds.stream()
-				.map(roleId -> userService.findRoleById(roleId))
-				.collect(Collectors.toSet());
-		updatedUser.setRoles(roles);
+		updatedUser.setRoles(userService.findRolesByIds(roleIds));
 
 		userService.update(updatedUser);
 		return "redirect:/admin";
