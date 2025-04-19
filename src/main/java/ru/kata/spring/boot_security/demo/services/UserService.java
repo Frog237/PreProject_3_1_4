@@ -18,12 +18,14 @@ public interface UserService {
 
     List<User> findAll();
 
-    void update(User user);
+    void update(User user, Integer id);
 
     void delete(Integer id);
 
     Role findRoleById(Long roleId);
 
     List<Role> getAllRoles();
+
+    public List<Role> getSortedRoles(User currentUser);
 
 }

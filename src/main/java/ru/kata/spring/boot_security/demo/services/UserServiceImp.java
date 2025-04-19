@@ -9,8 +9,11 @@ import ru.kata.spring.boot_security.demo.models.Role;
 import ru.kata.spring.boot_security.demo.models.User;
 import ru.kata.spring.boot_security.demo.repositories.PeopleRepository;
 import ru.kata.spring.boot_security.demo.repositories.RoleRepository;
+import ru.kata.spring.boot_security.demo.util.UserNotFoundException;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -40,7 +43,8 @@ public class UserServiceImp implements UserService {
     @Override
     @Transactional
     public User findById(Integer id) {
-        return peopleRepository.findById(id).get();
+        Optional<User> user = peopleRepository.findById(id);
+        return user.orElseThrow(UserNotFoundException::new);
     }
 
     @Override
@@ -66,9 +70,15 @@ public class UserServiceImp implements UserService {
 
     @Override
     @Transactional
-    public void update(User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        peopleRepository.save(user);
+    public void update(User user, Integer id) {
+        User userFromDb = peopleRepository.findById(id).get();
+        // Если пароль не изменяется, то не кодируем при обновлении
+        if (userFromDb.getPassword().equals(user.getPassword())) {
+            peopleRepository.save(user);
+        } else {
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+            peopleRepository.save(user);
+        }
     }
 
     @Override
@@ -92,4 +102,14 @@ public class UserServiceImp implements UserService {
     public List<Role> getAllRoles() {
         return roleRepository.findAll();
     }
+
+    @Override
+    @Transactional
+    public List<Role> getSortedRoles(User currentUser) {
+        List<Role> sortedRoles = currentUser.getRoles().stream()
+                .sorted(Comparator.comparingInt(role -> "ROLE_ADMIN".equals(role.getName()) ? 0 : 1))
+                .collect(Collectors.toList());
+        return sortedRoles;
+    }
+
 }
