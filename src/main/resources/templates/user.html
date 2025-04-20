@@ -3,6 +3,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="_csrf" th:content="${_csrf.token}" />
+    <meta name="_csrf_header" th:content="${_csrf.headerName}" />
     <link rel="shortcut icon" href="https://images.pngnice.com/download/2114/Spring-Transparent-PNG.png"
           type="image/png"/>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
@@ -12,13 +14,8 @@
 <body>
 <div class="d-flex bd-highlight p-3 mb-2 bg-dark">
     <div class="p-2 flex-grow-1 bd-highlight">
-                <span class="text-white fs-5" th:object="${user}">
-                    <span class="fw-bold" th:text="*{username}"></span>
-                        with roles: <span th:each="role : ${userRoles}"
-                                          th:switch="${role.getName()}">
-                                            <span th:case="'ROLE_USER'">USER</span>
-                                    </span>
-                </span>
+        <span class="text-white fs-5" id="user-info-header">
+        </span>
     </div>
     <div class="btn btn-link">
         <form th:method="POST" th:action="@{/logout}">
@@ -57,16 +54,12 @@
                     </thead>
                     <tbody>
                     <tr>
-                        <td th:text="${user.id}"/>
-                        <td th:text="${user.firstName}"/>
-                        <td th:text="${user.lastName}"/>
-                        <td th:text="${user.age}"/>
-                        <td th:text="${user.email}"/>
-                        <td>
-                            <span th:each="role : ${user.roles}" th:switch="${role.name}">
-                                    <span th:case="'ROLE_USER'">USER</span>
-                            </span>
-                        </td>
+                        <td id="info_id"></td>
+                        <td id="info_firstname"></td>
+                        <td id="info_lastname"></td>
+                        <td id="info_age"></td>
+                        <td id="info_email"></td>
+                        <td id="info_roles"></td>
                     </tr>
                     </tbody>
                 </table>
@@ -76,8 +69,41 @@
 </div>
 
 
+<!-- jQuery library -->
+<script src="https://code.jquery.com/jquery-3.6.3.js"
+        integrity="sha256-nQLuAZGRRcILA+6dMBOvcRh5Pe310sBpanc6+QBmyVM=" crossorigin="anonymous"></script>
+<!-- My JS file -->
+<script type="text/javascript" src="main.js"></script>
+<!-- Bootstrap JavaScript -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
         crossorigin="anonymous"></script>
+
+<script>
+    function loadUserInfo() {
+        fetch("/api/users/me", {
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json;charset=UTF-8'
+            }
+        })
+            .then(res => res.json())
+            .then(user => {
+                document.getElementById("info_id").textContent = user.id;
+                document.getElementById("info_firstname").textContent = user.firstName;
+                document.getElementById("info_lastname").textContent = user.lastName;
+                document.getElementById("info_age").textContent = user.age;
+                document.getElementById("info_email").textContent = user.email;
+                document.getElementById("info_roles").textContent = user.roles
+                    .map(role => role.name.replace("ROLE_", ""))
+                    .join(", ");
+            });
+    }
+
+    // Загружаем данные при открытии страницы
+    document.addEventListener("DOMContentLoaded", loadUserInfo);
+</script>
+
+
 </body>
 </html>

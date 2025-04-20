@@ -7,6 +7,25 @@ $(document).ready(function () {
     getUsers();
 })
 
+function loadUserHeader() {
+    fetch("/api/users/me", {
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json;charset=UTF-8'
+        }
+    })
+        .then(res => res.json())
+        .then(user => {
+            const username = user.username;
+            const roles = user.roles.map(role => role.name.replace("ROLE_", "")).join(", ");
+            document.getElementById("user-info-header").innerHTML =
+                `<span class="fw-bold">${username}</span> with roles: ${roles}`;
+        });
+}
+
+document.addEventListener("DOMContentLoaded", loadUserHeader);
+
+
 function getUsers() {
     fetch(URL)
         .then(function (response) {
@@ -45,6 +64,28 @@ function getUsers() {
         });
 }
 
+function loadUserInfo() {
+    fetch("/api/users/me", {
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json;charset=UTF-8'
+        }
+    })
+        .then(res => res.json())
+        .then(user => {
+            document.getElementById("info_id").textContent = user.id;
+            document.getElementById("info_firstname").textContent = user.firstName;
+            document.getElementById("info_lastname").textContent = user.lastName;
+            document.getElementById("info_age").textContent = user.age;
+            document.getElementById("info_email").textContent = user.email;
+            document.getElementById("info_roles").textContent = user.roles
+                .map(role => role.name.replace("ROLE_", ""))
+                .join(", ");
+        });
+}
+
+
+
 function getEditModal(id) {
     fetch(URL + '/' + id, {
         headers: {
@@ -78,6 +119,31 @@ function editUser() {
     let email = document.getElementById('edit_email').value;
     let password = document.getElementById('edit_password').value;
     let roles = $("#edit_role").val()
+
+    if (!firstName) {
+        alert("First name is required!");
+        return;
+    }
+    if (!lastName) {
+        alert("Last name is required!");
+        return;
+    }
+    if (!age) {
+        alert("Age is required!");
+        return;
+    }
+    if (!email) {
+        alert("Email is required!");
+        return;
+    }
+    if (!password) {
+        alert("Password is required!");
+        return;
+    }
+    if (!roles || roles.length === 0) {
+        alert("At least one role must be selected!");
+        return;
+    }
 
     for (let i = 0; i < roles.length; i++) {
         if (roles[i] === 'ROLE_ADMIN') {
@@ -199,6 +265,11 @@ function addUser() {
             document.newUserForm.reset();
         });
 }
+
+
+window.addEventListener("DOMContentLoaded", () => {
+    document.getElementById("v-pills-user-tab").addEventListener("click", loadUserInfo);
+});
 
 
 

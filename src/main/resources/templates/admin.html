@@ -13,13 +13,7 @@
 <body>
 <div class="d-flex bd-highlight p-3 mb-2 bg-dark">
     <div class="p-2 flex-grow-1 bd-highlight">
-        <span class="text-white fs-5" th:object="${user}">
-            <span class="fw-bold" th:text="*{username}"></span>
-            with roles:
-            <span th:each="role : ${userRoles}" th:switch="${role.getName()}">
-                <span th:case="'ROLE_ADMIN'">ADMIN</span>
-                <span th:case="'ROLE_USER'">USER</span>
-            </span>
+        <span class="text-white fs-5" id="user-info-header">
         </span>
     </div>
     <div class="btn btn-link">
@@ -134,17 +128,12 @@
                     </thead>
                     <tbody>
                     <tr>
-                        <td th:text="${user.id}"/>
-                        <td th:text="${user.firstName}"/>
-                        <td th:text="${user.lastName}"/>
-                        <td th:text="${user.age}"/>
-                        <td th:text="${user.email}"/>
-                        <td>
-                            <span th:each="role : ${user.roles}" th:switch="${role.name}">
-                                <span th:case="'ROLE_ADMIN'">ADMIN</span>
-                                <span th:case="'ROLE_USER'">USER</span>
-                            </span>
-                        </td>
+                        <td id="info_id"></td>
+                        <td id="info_firstname"></td>
+                        <td id="info_lastname"></td>
+                        <td id="info_age"></td>
+                        <td id="info_email"></td>
+                        <td id="info_roles"></td>
                     </tr>
                     </tbody>
                 </table>
