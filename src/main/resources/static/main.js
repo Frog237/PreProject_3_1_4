@@ -33,6 +33,7 @@ function getUsers() {
         })
         .then(function (users) {
             let placeholder = document.getElementById('data_output');
+            if (!placeholder) return;
             let out = "";
             for (let user of users) {
                 out += '<tr>';
